@@ -38,5 +38,17 @@ dailyactivity[which.max(dailyactivity$avg_step), ]$interval
 
 #counting the total number of missing step values.
 sum(is.na(df))
+#Merging the original dataframe with the dataframes for averages of the 5 minute intervals.
+combineddf<-merge(dailyactivity, df)
+#Subsetting only the NA rows and for steps and replacing them with the averages for that 5 #minute interval.  Placing the imputed data into a new column labeled "step"
+combineddf$step[is.na(combineddf$steps)]<-combineddf$avg_step[is.na(combineddf$steps)]
+
+
+imputedstepperday<-combineddf%>% group_by(date) %>% summarise(totalstepperday= sum(step))
+with(imputedstepperday, hist(totalstepperday,xlab="Total Steps Per Day", main="Histogram of Total Steps Taken Each Day", col="blue"))
+
+mean(imputedstepperday$totalstepperday)
+median(imputedstepperday$totalstepperday)
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
