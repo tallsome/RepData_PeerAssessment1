@@ -8,18 +8,35 @@ output:
 
 ## Loading and preprocessing the data
 
+df<-read.csv("activity.csv", header=TRUE)
+
+#Removes missing value from original dataframe
+df1<-filter(df, !is.na(steps))
 
 
 ## What is mean total number of steps taken per day?
 
+#Sorting and adding total steps taken each day. 
+stepperday<-group_by(df1,date)
+totalstep<-summarise(stepperday, totalstepperday=sum(steps))
 
+with(totalstep, hist(totalstepperday,xlab="Total Steps Per Day", main="Histogram of Total Steps Taken Each Day", col="blue"))
+
+mean(totalstep$totalstepperday)
+median(totalstep$totalstepperday)
 
 ## What is the average daily activity pattern?
 
+dailyactivity<-aggregate(steps~interval, data=df, mean, na.rm=T)
+names(dailyactivity)<-c("interval", "avg_step")
 
+with(dailyactivity, plot(x=interval, y=avg_step, type="l", col="blue", ylab="Avg Steps Taken, Averaged Across all Days", main="Daily Activity Pattern"))
+
+dailyactivity[which.max(dailyactivity$avg_step), ]$interval
 
 ## Imputing missing values
 
-
+#counting the total number of missing step values.
+sum(is.na(df))
 
 ## Are there differences in activity patterns between weekdays and weekends?
