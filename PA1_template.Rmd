@@ -8,6 +8,9 @@ output:
 
 ## Loading and preprocessing the data
 
+library(dplyr)
+library(lattice)
+
 df<-read.csv("activity.csv", header=TRUE)
 
 #Removes missing value from original dataframe
@@ -51,4 +54,13 @@ mean(imputedstepperday$totalstepperday)
 median(imputedstepperday$totalstepperday)
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+#Added two additional columns "day" and "day_type" to define the day of the week then
+#to categorize which is weekend and weekday using the ifelse statement.
+combineddf$day<-weekdays(as.Date(combineddf$date))
+combineddf$day_type<-ifelse (combineddf$day %in% c("Saturday", "Sunday"), "weekend", "weekday")
+
+weekactivity<-combineddf%>% group_by(interval, day_type) %>% summarise(avg_stepperday= mean(step))
+
+with(weekactivity, xyplot(avg_stepperday ~ interval | factor(day_type), layout = c(1,2), type = "l", col="blue"))
 
